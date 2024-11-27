@@ -25,10 +25,21 @@ public class Stock {
 
     @Column(nullable = false)
     private LocalDate manufacturingDate;
+    
+    @Column(nullable = false)
+    private Integer threshold;
 
     // Getters and setters
 
-    public Long getId() {
+    public Integer getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(Integer threshold) {
+		this.threshold = threshold;
+	}
+
+	public Long getId() {
         return id;
     }
 

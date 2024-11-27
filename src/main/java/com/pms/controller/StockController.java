@@ -2,6 +2,9 @@ package com.pms.controller;
 
 import com.pms.model.Stock;
 import com.pms.service.StockService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +21,7 @@ public class StockController {
     @GetMapping
     public String getAllStocks(Model model) {
         model.addAttribute("stocks", stockService.getAllStocks());
-        return "stock-list";
+        return "stock-management";
     }
 
     @PostMapping("/add")
@@ -53,7 +56,14 @@ public class StockController {
     @GetMapping("/drug/{drugId}")
     public String getStocksByDrugId(@PathVariable Long drugId, Model model) {
         model.addAttribute("stocks", stockService.getStocksByDrugId(drugId));
-        return "stock-list";
+        return "stock-management";
+    }
+    
+    @GetMapping("/below-threshold")
+    public String getStocksBelowThreshold(Model model) {
+        List<Stock> stocksBelowThreshold = stockService.getStocksBelowThreshold();
+        model.addAttribute("stocks", stocksBelowThreshold);
+        return "stock-management";
     }
 }
 

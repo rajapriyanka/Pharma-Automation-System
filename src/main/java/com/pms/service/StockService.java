@@ -67,6 +67,10 @@ public class StockService {
     public List<Stock> getStocksByDrugId(Long drugId) {
         return stockRepository.findByDrugIdOrderByExpiryDateAsc(drugId);
     }
+    
+    public List<Stock> getStocksBelowThreshold() {
+        return stockRepository.findStocksBelowThreshold();
+    }
 
     private void updateDrugTotalQuantity(Long drugId) {
         Drug drug = drugService.getDrugById(drugId);

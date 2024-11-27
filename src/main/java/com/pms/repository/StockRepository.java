@@ -11,5 +11,8 @@ import java.util.List;
 public interface StockRepository extends JpaRepository<Stock, Long> {
     @Query("SELECT s FROM Stock s WHERE s.drug.id = :drugId ORDER BY s.expiryDate ASC")
     List<Stock> findByDrugIdOrderByExpiryDateAsc(Long drugId);
+
+    @Query("SELECT s FROM Stock s WHERE s.quantity <= s.threshold")
+    List<Stock> findStocksBelowThreshold();
 }
 
