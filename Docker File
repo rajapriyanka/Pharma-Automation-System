@@ -1,0 +1,14 @@
+# Use a base image with Java runtime environment
+FROM openjdk:23-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the JAR file into the container
+COPY target/pharmacy-management.jar /app/pharmacy-management.jar
+
+# Expose the port your application runs on
+EXPOSE 8000
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app/pharmacy-management.jar"]
