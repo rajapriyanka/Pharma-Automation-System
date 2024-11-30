@@ -2,14 +2,13 @@ package com.pms.controller;
 
 import com.pms.model.Stock;
 import com.pms.service.StockService;
-
-import java.util.List;
-
+import com.pms.service.DrugService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/stocks")
@@ -18,26 +17,20 @@ public class StockController {
     @Autowired
     private StockService stockService;
 
+    @Autowired
+    private DrugService drugService;
+
     @GetMapping
     public String getAllStocks(Model model) {
-        model.addAttribute("stocks", stockService.getAllStocks());
+        List<Stock> stocks = stockService.getAllStocks();
+        model.addAttribute("stocks", stocks);
+        model.addAttribute("drugs", drugService.getAllDrugs());
         return "stock-management";
     }
 
     @PostMapping("/add")
-    @ResponseBody
-    public ResponseEntity<Stock> addStock(@RequestBody Stock stock) {
-        Stock addedStock = stockService.addStock(stock);
-        if (addedStock != null) {
-            return ResponseEntity.ok(addedStock);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PostMapping("/update")
-    public String updateStock(@ModelAttribute Stock stock) {
-        stockService.updateStock(stock);
+    public String addStock(@ModelAttribute Stock stock) {
+        stockService.addStock(stock);
         return "redirect:/stocks";
     }
 
@@ -47,23 +40,17 @@ public class StockController {
         return "redirect:/stocks";
     }
 
-    @PostMapping("/remove-all")
-    public String removeAllStocks() {
-        stockService.removeAllStocks();
-        return "redirect:/stocks";
-    }
-
-    @GetMapping("/drug/{drugId}")
-    public String getStocksByDrugId(@PathVariable Long drugId, Model model) {
-        model.addAttribute("stocks", stockService.getStocksByDrugId(drugId));
-        return "stock-management";
-    }
-    
     @GetMapping("/below-threshold")
     public String getStocksBelowThreshold(Model model) {
-        List<Stock> stocksBelowThreshold = stockService.getStocksBelowThreshold();
-        model.addAttribute("stocks", stocksBelowThreshold);
-        return "stock-management";
+        List<Stock> stocks = stockService.getStocksBelowThreshold();
+        model.addAttribute("stocks", stocks);
+        return "stock-below-threshold";
+    }
+
+    @PostMapping("/restock")
+    public String restockStock(@RequestParam Long id, @RequestParam Integer quantity) {
+        stockService.restockStock(id, quantity);
+        return "redirect:/stock/below-threshold";
     }
 }
 

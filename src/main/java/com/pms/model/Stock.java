@@ -10,7 +10,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drug_id", nullable = false)
     private Drug drug;
 
@@ -30,16 +30,7 @@ public class Stock {
     private Integer threshold;
 
     // Getters and setters
-
-    public Integer getThreshold() {
-		return threshold;
-	}
-
-	public void setThreshold(Integer threshold) {
-		this.threshold = threshold;
-	}
-
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -86,5 +77,12 @@ public class Stock {
     public void setManufacturingDate(LocalDate manufacturingDate) {
         this.manufacturingDate = manufacturingDate;
     }
-}
 
+    public Integer getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Integer threshold) {
+        this.threshold = threshold;
+    }
+}

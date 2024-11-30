@@ -1,8 +1,9 @@
 package com.pms.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "drugs")
@@ -11,20 +12,36 @@ public class Drug {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
     private String description;
+    
+    @Column(nullable = false)
     private Double price;
-    private LocalDate expiryDate;
+  
+    
     private String supplierName;
-    private Integer totalQuantity;
-    private boolean active;
-    private boolean banned;
+    
+    @Column(name = "total_quantity", nullable = false)
+    private Integer totalQuantity = 0;
+    
+    private boolean active = true;
+    
+    private boolean banned = false;
+    
     private String bannedReason;
+    
+    @Column(name = "minimum_threshold", nullable = false)
+    private Integer minimumThreshold = 0;
+
+    @OneToMany(mappedBy = "drug", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Stock> stocks = new ArrayList<>();
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     // Getters and setters
-
     public Long getId() {
         return id;
     }
@@ -55,14 +72,6 @@ public class Drug {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
     }
 
     public String getSupplierName() {
@@ -103,6 +112,22 @@ public class Drug {
 
     public void setBannedReason(String bannedReason) {
         this.bannedReason = bannedReason;
+    }
+
+    public Integer getMinimumThreshold() {
+        return minimumThreshold;
+    }
+
+    public void setMinimumThreshold(Integer minimumThreshold) {
+        this.minimumThreshold = minimumThreshold;
+    }
+
+    public List<Stock> getStocks() {
+        return stocks;
+    }
+
+    public void setStocks(List<Stock> stocks) {
+        this.stocks = stocks;
     }
 
     public LocalDateTime getCreatedAt() {

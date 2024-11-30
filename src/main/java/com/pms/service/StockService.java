@@ -2,10 +2,13 @@ package com.pms.service;
 
 import com.pms.model.Drug;
 import com.pms.model.Stock;
+import com.pms.repository.DrugRepository;
 import com.pms.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -15,71 +18,57 @@ public class StockService {
     private StockRepository stockRepository;
 
     @Autowired
-    private DrugService drugService;
+    private DrugRepository drugRepository;
 
     public List<Stock> getAllStocks() {
         return stockRepository.findAll();
     }
 
-    public Stock getStockById(Long id) {
-        return stockRepository.findById(id).orElse(null);
-    }
-
+    @Transactional
     public Stock addStock(Stock stock) {
-        Drug drug = drugService.getDrugById(stock.getDrug().getId());
-        if (drug != null) {
-            stock.setDrug(drug);
-            Stock savedStock = stockRepository.save(stock);
-            updateDrugTotalQuantity(drug.getId());
-            return savedStock;
+        if (stock.getDrug() == null || stock.getDrug().getId() == null) {
+            throw new IllegalArgumentException("Drug ID must be provided");
         }
-        return null;
+
+        Drug drug = drugRepository.findById(stock.getDrug().getId())
+            .orElseThrow(() -> new EntityNotFoundException("Drug not found with id: " + stock.getDrug().getId()));
+
+        stock.setDrug(drug);
+        Stock savedStock = stockRepository.save(stock);
+
+        drug.setTotalQuantity(drug.getTotalQuantity() + stock.getQuantity());
+        drugRepository.save(drug);
+
+        return savedStock;
     }
 
-    public Stock updateStock(Stock stock) {
-        Stock existingStock = stockRepository.findById(stock.getId()).orElse(null);
-        if (existingStock != null) {
-            existingStock.setBatchNo(stock.getBatchNo());
-            existingStock.setQuantity(stock.getQuantity());
-            existingStock.setExpiryDate(stock.getExpiryDate());
-            existingStock.setManufacturingDate(stock.getManufacturingDate());
-            Stock updatedStock = stockRepository.save(existingStock);
-            updateDrugTotalQuantity(existingStock.getDrug().getId());
-            return updatedStock;
-        }
-        return null;
-    }
-
+    @Transactional
     public void deleteStock(Long id) {
-        Stock stock = stockRepository.findById(id).orElse(null);
-        if (stock != null) {
-            stockRepository.deleteById(id);
-            updateDrugTotalQuantity(stock.getDrug().getId());
-        }
+        Stock stock = stockRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Stock not found with id: " + id));
+        
+        Drug drug = stock.getDrug();
+        drug.setTotalQuantity(drug.getTotalQuantity() - stock.getQuantity());
+        drugRepository.save(drug);
+        
+        stockRepository.delete(stock);
     }
 
-    public void removeAllStocks() {
-        stockRepository.deleteAll();
-        // Update total quantity for all drugs
-        drugService.getAllDrugs().forEach(drug -> updateDrugTotalQuantity(drug.getId()));
-    }
-
-    public List<Stock> getStocksByDrugId(Long drugId) {
-        return stockRepository.findByDrugIdOrderByExpiryDateAsc(drugId);
-    }
-    
     public List<Stock> getStocksBelowThreshold() {
-        return stockRepository.findStocksBelowThreshold();
+        return stockRepository.findByQuantityLessThanThreshold();
     }
 
-    private void updateDrugTotalQuantity(Long drugId) {
-        Drug drug = drugService.getDrugById(drugId);
-        if (drug != null) {
-            List<Stock> stocks = getStocksByDrugId(drugId);
-            int totalQuantity = stocks.stream().mapToInt(Stock::getQuantity).sum();
-            drug.setTotalQuantity(totalQuantity);
-            drugService.updateDrug(drug);
-        }
+    @Transactional
+    public void restockStock(Long id, Integer quantity) {
+        Stock stock = stockRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Stock not found with id: " + id));
+
+        stock.setQuantity(stock.getQuantity() + quantity);
+        stockRepository.save(stock);
+
+        Drug drug = stock.getDrug();
+        drug.setTotalQuantity(drug.getTotalQuantity() + quantity);
+        drugRepository.save(drug);
     }
 }
 

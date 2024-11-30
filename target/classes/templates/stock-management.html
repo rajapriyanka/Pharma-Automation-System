@@ -15,25 +15,23 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
-				                   
-                                    <li class="nav-item">
-				                        <a class="nav-link" href="drug-list.html" >Drug Management</a>
-				                    </li>
-				                   
-				                    <li class="nav-item">
-				                        <a class="nav-link" href="stock-management.html">Stock Management</a>
-				                    </li>
-									<li class="nav-item">
-									<a class="nav-link" href="#supplierManagement">Supplier Management</a>
-									</li>
-				                    <li class="nav-item">
-				                        <a class="nav-link" href="#prescriptionBilling">Prescription &amp; Billing</a>
-				                    </li>
-				                    <li class="nav-item">
-				                        <a class="nav-link" href="#reports">Reports</a>
-				                    </li>
-				                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/drugs">Drug Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stocks">Stock Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#supplierManagement">Supplier Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#prescriptionBilling">Prescription &amp; Billing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports">Reports</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -42,39 +40,39 @@
         <h2>Stock Management</h2>
         
         <div class="mb-3">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBatchModal">
-                Add New Batch
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                Add New Stock
             </button>
-            <form th:action="@{/stock/remove-all}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove all batches? This action cannot be undone.')">
-                    Remove All Batches
-                </button>
-            </form>
+            <a href="/stocks/below-threshold" class="btn btn-warning">
+                Show Stocks Below Threshold
+            </a>
         </div>
 
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Drug ID</th>
                     <th>Drug Name</th>
                     <th>Batch No</th>
                     <th>Quantity</th>
-                    <th>Manufacturing Date</th>
                     <th>Expiry Date</th>
+                    <th>Manufacturing Date</th>
+                    <th>Threshold</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="batch : ${batches}">
-                    <td th:text="${batch.drugId}"></td>
-                    <td th:text="${batch.drugName}"></td>
-                    <td th:text="${batch.batchNo}"></td>
-                    <td th:text="${batch.quantity}"></td>
-                    <td th:text="${#temporals.format(batch.manufacturingDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${#temporals.format(batch.expiryDate, 'yyyy-MM-dd')}"></td>
+                <tr th:each="stock : ${stocks}">
+                    <td th:text="${stock.drug.name}"></td>
+                    <td th:text="${stock.batchNo}"></td>
+                    <td th:text="${stock.quantity}"></td>
+                    <td th:text="${#temporals.format(stock.expiryDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#temporals.format(stock.manufacturingDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${stock.threshold}"></td>
                     <td>
-                        <form th:action="@{/stock/remove/{id}(id=${batch.id})}" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this batch?')">Remove</button>
+                        <form th:action="@{/stocks/delete}" method="post" style="display: inline;">
+                            <input type="hidden" name="id" th:value="${stock.id}" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this stock?')">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -82,52 +80,48 @@
         </table>
     </div>
 
-    <!-- Add Batch Modal -->
-    <div class="modal fade" id="addBatchModal" tabindex="-1" aria-labelledby="addBatchModalLabel" aria-hidden="true">
+    <!-- Add Stock Modal -->
+    <div class="modal fade" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addBatchModalLabel">Add New Batch</h5>
+                    <h5 class="modal-title" id="addStockModalLabel">Add New Stock</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form th:action="@{/stock/add}" method="post" th:object="${newBatch}">
+                    <form th:action="@{/stocks/add}" method="post">
                         <div class="mb-3">
-                            <label for="drugId" class="form-label">Drug ID</label>
-                            <input type="text" class="form-control" id="drugId" th:field="*{drugId}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="drugName" class="form-label">Drug Name</label>
-                            <input type="text" class="form-control" id="drugName" th:field="*{drugName}" required>
+                            <label for="drugId" class="form-label">Drug</label>
+                            <select class="form-select" id="drugId" name="drug.id" required>
+                                <option th:each="drug : ${drugs}" th:value="${drug.id}" th:text="${drug.name}"></option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="batchNo" class="form-label">Batch Number</label>
-                            <input type="text" class="form-control" id="batchNo" th:field="*{batchNo}" required>
+                            <input type="text" class="form-control" id="batchNo" name="batchNo" required>
                         </div>
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="quantity" th:field="*{quantity}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="manufacturingDate" class="form-label">Manufacturing Date</label>
-                            <input type="date" class="form-control" id="manufacturingDate" th:field="*{manufacturingDate}" required>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required>
                         </div>
                         <div class="mb-3">
                             <label for="expiryDate" class="form-label">Expiry Date</label>
-                            <input type="date" class="form-control" id="expiryDate" th:field="*{expiryDate}" required>
+                            <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" onclick="add()">Add Batch</button>
+                        <div class="mb-3">
+                            <label for="manufacturingDate" class="form-label">Manufacturing Date</label>
+                            <input type="date" class="form-control" id="manufacturingDate" name="manufacturingDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="threshold" class="form-label">Threshold</label>
+                            <input type="number" class="form-control" id="threshold" name="threshold" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Stock</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-              function add(){
-                alert.windows("Stock Added Successfully!")
-              }
-    </script>
 </body>
 </html>
 
