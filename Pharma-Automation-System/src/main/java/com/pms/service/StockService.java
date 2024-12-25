@@ -27,7 +27,7 @@ public class StockService {
     @Autowired
     private Drug drug;
 
-    @Autowired
+   @Autowired
     public StockService(StockRepository stockRepository, DrugRepository drugRepository, SmsService smsService, EmailService emailService) {
         this.stockRepository = stockRepository;
         this.drugRepository = drugRepository;

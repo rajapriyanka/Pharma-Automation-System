@@ -36,9 +36,6 @@ public class PrescriptionService {
     @Autowired
     private BillRepository billRepository;
     
-    @Autowired
-    private StockService stockService;
-
     public List<Prescription> getAllPrescriptions() {
         return prescriptionRepository.findAll();
     }
