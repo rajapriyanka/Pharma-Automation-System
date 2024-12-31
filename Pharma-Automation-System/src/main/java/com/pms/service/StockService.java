@@ -2,6 +2,7 @@ package com.pms.service;
 
 import com.pms.exception.InvalidEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class StockService {
     @Autowired
     private Drug drug;
 
-   @Autowired
+    @Autowired
     public StockService(StockRepository stockRepository, DrugRepository drugRepository, SmsService smsService, EmailService emailService) {
         this.stockRepository = stockRepository;
         this.drugRepository = drugRepository;
@@ -142,7 +143,7 @@ public class StockService {
             if (stock.getQuantity() < stock.getThreshold()) {
                 Drug drug = stock.getDrug();
                 String message = "Reorder Notification: The stock for drug " 
-                                 + drug.getName() + " (Batch ID: " + stock.getBatchNo()
+                                 + drug.getName() + " (Stock ID: " + stock.getId()
                                  + ") is below the threshold. Please reorder.";
 
                 // Send email
@@ -158,8 +159,8 @@ public class StockService {
     }
 
 
-//     @Scheduled(cron = "*/5 * * * * ?") 
-//	 @Scheduled(cron = "0 0 * * * * ?") //runs every one hr
+//   @Scheduled(cron = "*/5 * * * * ?") 
+    @Scheduled(cron = "0 0 0 * * ?")//runs every one hr
 	 public void scheduledReorderNotifications() {
 	     // Automatically process reorder notifications for all stocks
 	     String result = sendReorderNotification();
