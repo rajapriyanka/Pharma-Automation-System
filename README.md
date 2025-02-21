@@ -47,7 +47,7 @@ cd Pharma-Automation-System
 ```
 
 ### 2️⃣ Setup MySQL Database  
-- Create a **MySQL database** named `pharmacy_db`.  
+- Create a **MySQL database** named `pharma`.  
 - Update `application.properties` with your database credentials.  
 
 ```properties
