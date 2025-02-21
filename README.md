@@ -9,11 +9,10 @@
 ---
 
 ## 🌟 Features  
-✅ **User Authentication** – Secure login and role-based access.  
 ✅ **Medicine Management** – Add, edit, update, and delete medicine records.  
-✅ **Billing System** – Generate and print invoices for purchases.  
+✅ **Billing System** – Generate Bill with discounts. 
 ✅ **Automatic Reorder Notifications** – Alerts for low-stock medicines.  
-✅ **Admin Dashboard** – Manage pharmacy inventory and sales reports.  
+✅ **Pharmacist Dashboard** – Manage pharmacy inventory and sales reports.  
 
 ---
 
