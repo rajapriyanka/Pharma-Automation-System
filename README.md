@@ -18,7 +18,8 @@
 ---
 
 ## 🛠 Tech Stack  
-**Backend:** Spring Boot, Java, Thymeleaf  
+**Backend:** Spring Boot, Java, Thymeleaf
+
 **Database:** MySQL  
 **Frontend:** HTML, CSS, JavaScript  
 **Tools:** Postman, Spring Tool Suite (STS), GitHub  
@@ -26,6 +27,13 @@
 ---
 
 ## 📸 Screenshots  
+![Screenshot (316)](https://github.com/user-attachments/assets/838ca015-343f-474b-83ff-93fb2af72457)
+![Screenshot (315)](https://github.com/user-attachments/assets/bc855614-bbfc-44a7-8334-f6364942d98c)
+![Screenshot (314)](https://github.com/user-attachments/assets/c85c0456-dbec-4fc4-9aed-6ed9e836b720)
+![Screenshot (313)](https://github.com/user-attachments/assets/b7bcefb9-c4ba-4313-8d94-6e108506fab6)
+![Screenshot (312)](https://github.com/user-attachments/assets/ab312fc4-8405-4dfd-8648-2056e85dced9)
+![Screenshot (311)](https://github.com/user-attachments/assets/551a41f6-bccb-49f1-88c3-90b34150ee43)
+![Screenshot (317)](https://github.com/user-attachments/assets/936509d8-f804-4ce8-9df3-9e62ea87ac4b)
 
 
 ---
