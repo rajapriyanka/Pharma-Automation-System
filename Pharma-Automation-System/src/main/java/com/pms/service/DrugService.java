@@ -66,7 +66,7 @@ public class DrugService {
 
         // Fetch existing drug
         Drug existingDrug = drugRepository.findById(drug.getId())
-                .orElseThrow(() -> new InvalidEntityException("Drug with ID " + drug.getId() + " not found"));
+                .orElseThrow(() -> new InvalidEntityException("Drug with Id " + drug.getId() + " not found"));
 
         // Validate banned reason if drug is marked as banned
         if (drug.isBanned() && (drug.getBannedReason() == null)) {
